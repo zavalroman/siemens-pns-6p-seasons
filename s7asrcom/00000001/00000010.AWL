@@ -1,0 +1,37 @@
+DATA_BLOCK "NOMINAL"
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+STRUCT
+	
+	fc1_nominal : REAL;
+	fc2_nominal : REAL;
+	
+	fc1_upSen	: REAL;
+	fc2_upSen 	: REAL;
+	
+	fc1_alrReset : BOOL;
+	fc2_alrReset : BOOL;
+	
+	fc3_nominal	: REAL;
+	fc3_upSen	: REAL;
+	fc3_alrReset : BOOL;
+	
+END_STRUCT
+BEGIN
+
+	fc1_nominal := 1.500000e+001;
+	fc2_nominal := 1.500000e+001;
+	
+	fc1_upSen	:= 1.000000e+001;
+	fc2_upSen	:= 1.000000e+001;
+	
+	fc1_alrReset := FALSE;
+	fc2_alrReset := FALSE;
+	
+	fc3_nominal := 1.500000e+001;
+	fc3_upSen	:= 1.000000e+001;
+	fc3_alrReset	:= FALSE;
+	
+END_DATA_BLOCK

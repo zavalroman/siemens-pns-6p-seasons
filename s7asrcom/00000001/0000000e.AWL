@@ -1,0 +1,46 @@
+DATA_BLOCK "AlarmState"
+TITLE =state of stantion's faults
+VERSION : 1.0
+
+STRUCT
+	BreakIN 	: BOOL; //1
+	ShortIN 	: BOOL; //2
+	BreakOUT 	: BOOL; //3
+	ShortOUT  	: BOOL; //4
+	Fire		: BOOL; //5
+	Security 	: BOOL; //6
+	Flood		: BOOL; //7
+	Phase	    : BOOL; //8
+	AVR1	    : BOOL; //9
+	AVR2	    : BOOL; //10
+	Mushroom	: BOOL; //11
+	Dryhod      : BOOL; //12
+	Mokryhod    : BOOL; //13
+	fc1_alarm	: BOOL; //14
+	fc2_alarm	: BOOL; //15
+	non1     : BOOL; //16
+	
+	Pmp1_fault : BOOL; //1
+	Pmp2_fault : BOOL; //2
+	non2 	 : BOOL; //3
+	non3  	 : BOOL; //4
+	non4	 : BOOL; //5
+	non5 	 : BOOL; //6
+	non6  	 : BOOL; //7
+	non7     : BOOL; //8
+	non8   	 : BOOL; //9
+	non9     : BOOL; //10
+	non10 	 : BOOL; //11
+	non11    : BOOL; //12
+	non12  	 : BOOL; //13
+	non13  	 : BOOL; //14
+	non14	 : BOOL; //15
+	non15    : BOOL; //16
+
+		
+END_STRUCT;
+
+BEGIN
+
+	
+END_DATA_BLOCK

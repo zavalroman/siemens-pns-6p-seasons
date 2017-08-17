@@ -1,0 +1,274 @@
+FUNCTION "ROTATION" : VOID
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1 //27.09.16 -- добавлен 4й НА
+
+VAR_INPUT
+	p1_DI_auto : BOOL;
+	p2_DI_auto : BOOL;
+	p3_DI_auto : BOOL;
+	p4_DI_auto : BOOL;
+END_VAR
+VAR_OUTPUT
+	p1_iAuto : BOOL;
+	p2_iAuto : BOOL;
+	p3_iAuto : BOOL;
+	p4_iAuto : BOOL;
+END_VAR
+VAR_TEMP
+	realDT : DT;
+	orderDT : DT;
+	realD  : DATE;
+	today  : INT;
+	//rotSwiMode : BOOL;
+	//timeHasCome : BOOL;
+	//rotation : BOOL;
+	
+END_VAR
+BEGIN
+NETWORK
+TITLE =
+//ждем наступления момента Х
+	CALL "READ_CLK" (
+		RET_VAL := MW0,
+		CDT		:= #realDT
+	);
+	CALL "DT to DATE" (
+		IN	:= #realDT,
+		RET_VAL := #realD
+	);	
+	CALL "DATE and TOD to DT" (
+		IN1 := #realD,
+		IN2 := #DB_ROTATION.swiTime,
+		RET_VAL := #orderDT
+	);
+	CALL "GE_DT" (
+		DT1 := #realDT,
+		DT2 := #orderDT,
+		RET_VAL := #timeHasCome
+	);
+	CALL "DT to DAY" (
+		IN := #realDT,
+		RET_VAL := #today
+	);	
+		
+NETWORK
+TITLE =
+//включаем режим переключения комбинации
+	L #today;
+	L 1;
+	-I;
+	LAR1;
+	OPN "DB_ROTATION";	
+	
+	A DBX [AR1,P#0.0];
+	A #timeHasCome;
+	FP #rotFPbegin;
+	S #rotSwiMode;
+	S #rotation200;
+	
+NETWORK
+TITLE =
+//если режим переключения включен, гасим НА
+	A #rotSwiMode;
+	JCN _000;
+		CLR;
+		= p1_iAuto;
+		= p2_iAuto;
+		= p3_iAuto;
+		= p4_iAuto;
+	_000 : NOP 0;
+
+NETWORK
+TITLE =
+//в противном случае используем команды с галетников
+	AN #rotSwiMode;
+	JCN _001;
+		A #p1_DI_auto;
+		= p1_iAuto;
+		A #p2_DI_auto;
+		= p2_iAuto;
+		A #p3_DI_auto;
+		= p3_iAuto;
+		A #p4_DI_auto;
+		= p4_iAuto;
+	_001 : NOP 0;
+
+NETWORK
+TITLE =
+//запускаем таймер
+	A #rotSwiMode;
+	L #DB_ROTATION.silentHill;
+	SD #silentRot;
+
+NETWORK
+TITLE =
+//ротация лол
+	A(;
+		A #rotation200;
+		A DB200.prioScheme_1;
+	);
+	JCN _005;
+		R #rotation200;
+		R DB200.prioScheme_1;
+		S DB200.prioScheme_2;
+	_005: NOP 0;
+
+NETWORK
+TITLE =
+//ротация
+	A(;
+		A #rotation200;
+		A DB200.prioScheme_2;
+	);
+	JCN _006;
+		R #rotation200;
+		R DB200.prioScheme_2;
+		S DB200.prioScheme_3;
+	_006: NOP 0;
+
+NETWORK
+TITLE =
+//ротация
+	A(;
+		A #rotation200;
+		A DB200.prioScheme_3;
+	);
+	JCN _007;
+		R #rotation200;
+		R DB200.prioScheme_3;
+		S DB200.prioScheme_4;
+	_007: NOP 0;
+	
+NETWORK
+TITLE =
+//ротация
+	A(;
+		A #rotation200;
+		A DB200.prioScheme_4;
+	);
+	JCN _071;
+		R #rotation200;
+		R DB200.prioScheme_4;
+		S DB200.prioScheme_1;
+	_071: NOP 0;
+	
+NETWORK
+TITLE =
+//используем схему 1
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		AN #DI_p4_confirm;
+		A DB200.prioScheme_1;
+	);
+	JCN _002;
+		L 1;
+		T #PROCESS_DATA.p1_priority;
+		L 2;
+		T #PROCESS_DATA.p2_priority;
+		L 3;
+		T #PROCESS_DATA.p3_priority;
+		//L 4;
+		//T #PROCESS_DATA.p4_priority; 28.12.2016
+		L 4;
+		T #PROCESS_DATA.p4_priority;
+	_002 : NOP 0;
+
+NETWORK
+TITLE =
+//2
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		AN #DI_p4_confirm;
+		A DB200.prioScheme_2;
+	);
+	JCN _003;
+		L 3; // 28.12.2016
+		T #PROCESS_DATA.p1_priority;
+		L 1;
+		T #PROCESS_DATA.p2_priority;
+		L 2;
+		T #PROCESS_DATA.p3_priority;
+		//L 3;
+		//T #PROCESS_DATA.p4_priority; 28.12.2016
+		L 4;
+		T #PROCESS_DATA.p4_priority;
+	_003 : NOP 0;
+
+NETWORK
+TITLE =
+//3
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		AN #DI_p4_confirm;
+		A DB200.prioScheme_3;
+	);
+	JCN _004;
+		L 2; // 28.12.2016
+		T #PROCESS_DATA.p1_priority;
+		L 3; // 28.12.2016
+		T #PROCESS_DATA.p2_priority;
+		L 1;
+		T #PROCESS_DATA.p3_priority;
+		//L 2;
+		//T #PROCESS_DATA.p4_priority; 28.12.2016
+		L 4;
+		T #PROCESS_DATA.p4_priority;
+	_004 : NOP 0;
+	
+NETWORK
+TITLE =
+//4
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		AN #DI_p4_confirm;
+		A DB200.prioScheme_4;
+	);
+	JCN _040;
+		L 2; // 28.12.2016
+		T #PROCESS_DATA.p1_priority;
+		L 1; // 28.12.2016
+		T #PROCESS_DATA.p2_priority;
+		L 3; // 28.12.2016
+		T #PROCESS_DATA.p3_priority;
+		//L 1;
+		//T #PROCESS_DATA.p4_priority; 28.12.2016
+		L 4;
+		T #PROCESS_DATA.p4_priority;
+	_040 : NOP 0;
+
+NETWORK
+TITLE =
+//если таймер всё, отключаем режим
+	A #silentRot;
+	R #rotSwiMode;
+	
+NETWORK
+TITLE =
+//разрешение переключения кобинаций
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		AN #DI_p4_confirm;
+	);
+	= DB_ROTATION.allow	
+
+NETWORK
+TITLE =
+//если не выбрана никакая схема, выбираем первую 03.02.16 //27.09.16
+	AN DB200.prioScheme_1;
+	AN DB200.prioScheme_2;
+	AN DB200.prioScheme_3;
+	AN DB200.prioScheme_4;
+	S  DB200.prioScheme_1;
+
+END_FUNCTION

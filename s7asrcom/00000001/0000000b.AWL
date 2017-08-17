@@ -1,0 +1,22 @@
+FUNCTION "FAULT_CHECK" : VOID
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR_TEMP
+END_VAR
+
+BEGIN
+NETWORK
+TITLE =
+//обрыв цепи датчика давления на выходе
+	L DB2.DBD0;
+	L 3.800000e+000;
+	<=R;
+	
+
+END_FUNCTION

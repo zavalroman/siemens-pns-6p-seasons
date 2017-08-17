@@ -1,0 +1,39 @@
+DATA_BLOCK "DB_ROTATION"
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+STRUCT
+	
+	SUN : BOOL;
+	MON : BOOL;
+	TUE : BOOL;
+	WED : BOOL;
+	THU : BOOL;
+	FRI : BOOL;
+	SAT : BOOL;
+	prioScheme_1 : BOOL; //1-2-3-4
+	prioScheme_2 : BOOL; //4-1-2-3
+	prioScheme_3 : BOOL; //3-4-1-2
+	swiTime 	 : TIME_OF_DAY;
+	silentHill 	 : S5TIME;
+	allow	     : BOOL;
+	prioScheme_4 : BOOL; //2-3-4-1
+END_STRUCT
+BEGIN
+	
+	SUN := FALSE;
+	MON := FALSE;
+	TUE := FALSE;
+	WED := FALSE;
+	THU := FALSE;
+	FRI := FALSE;
+	SAT := FALSE;
+	prioScheme_1 := TRUE;
+	prioScheme_2 := FALSE;
+	prioScheme_3 := FALSE;
+	swiTime := TOD#03:00:00.000;
+	silentHill := S5T#10S;
+	allow := FALSE;
+	prioScheme_4 := FALSE;
+END_DATA_BLOCK

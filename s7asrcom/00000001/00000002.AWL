@@ -1,0 +1,25 @@
+FUNCTION FC2 : VOID
+TITLE = AIs values convert
+VERSION : 1.0
+
+BEGIN
+NETWORK
+TITLE = read values from phys channels; convert to mA
+	
+	L #pInput;
+	T DB1.DBW0;
+	
+	L #pOutput;
+	T DB1.DBW2;
+	
+	
+	
+	CALL FC1 (Raw := DB1.DBW0,
+			  Current := DB2.DBD0);
+			  
+	CALL FC1 (Raw := DB1.DBW2,
+			  Current := DB2.DBD4);		  
+	
+			  
+		  		  		  		  
+END_FUNCTION

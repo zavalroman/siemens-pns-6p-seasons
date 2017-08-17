@@ -1,0 +1,497 @@
+FUNCTION "PNS_CORE" : VOID
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+VAR_INPUT
+	p1_iAuto 	: BOOL; //команда на включение насоса в авто-режиме
+	p1_confirm	: BOOL;
+	p2_iAuto 	: BOOL; 
+	p2_confirm	: BOOL;
+	p3_iAuto 	: BOOL;
+	p3_confirm	: BOOL;
+	p4_iAuto	: BOOL; //26.09.16
+	p4_confirm	: BOOL;
+	
+	P_current 	: REAL; 
+	
+	//fc1_curFreq : REAL;
+	//fc2_curFreq	: REAL;
+	//fc3_curFreq : REAL;
+	p1_ficPrior		: INT;
+	p2_ficPrior		: INT;
+	p3_ficPrior		: INT;
+	p4_ficPrior		: INT;
+	
+END_VAR
+VAR_OUTPUT
+	p1_oWithFC	: BOOL;
+	
+	p2_oWithFC 	: BOOL;
+	//p2_oDirect	: BOOL;
+	p3_oWithFC	: BOOL;
+	//p3_oDirect	: BOOL;
+	p4_out		: BOOL;
+	
+	fc1_oSetP	: REAL;
+	fc2_oSetP	: REAL;	
+	fc3_oSetP	: REAL;
+	
+END_VAR
+VAR_TEMP	
+	mainMustStart : BOOL;
+	resMustStart  : BOOL;
+	sResMustStart : BOOL;
+	thResMustStart: BOOL;
+	//sResStartMode : BOOL;
+	//allowDirect	  : BOOL;
+	
+	//p1_ficPrior		: INT;
+	//p2_ficPrior		: INT;
+	//p3_ficPrior		: INT;	
+	
+	//p2_startKinshi	: BOOL;
+	//p3_startKinshi	: BOOL;	
+	
+END_VAR
+BEGIN
+(*---------------------------включение НА в авто внезапно--------------------
+NETWORK
+TITLE =
+//запрет включения второго НА, если третий работает от ПЧ
+	A #p2_iAuto;
+	FP #guuzenFP1;
+	A(;
+		L #PROCESS_DATA.p2_priority;
+		L #PROCESS_DATA.p3_priority;
+		<I;
+		);
+	A #p3_oWithFC;
+	L S5T#15S;
+	SF #p2_guuzenTimer;
+	
+NETWORK
+TITLE =
+//запрет включения третьего НА, если второй работает от ПЧ
+
+	A #p3_iAuto;
+	FP #guuzenFP2;
+	A(;
+		L #PROCESS_DATA.p2_priority;
+		L #PROCESS_DATA.p3_priority;
+		>I;
+		);
+	A #p2_oWithFC;
+	L S5T#15S;
+	SF #p3_guuzenTimer;
+	
+NETWORK
+TITLE =
+//
+	A #p2_iAuto;
+	FN #guuzenFP3;
+	A(;
+		L #PROCESS_DATA.p2_priority;
+		L #PROCESS_DATA.p3_priority;
+		<I;
+		);
+	AN #p3_oWithFC;
+	L S5T#15S;
+	SF #p3_guuzenTimer;
+
+NETWORK
+TITLE =
+//
+
+	A #p3_iAuto;
+	FN #guuzenFP4;
+	A(;
+		L #PROCESS_DATA.p2_priority;
+		L #PROCESS_DATA.p3_priority;
+		>I;
+		);
+	AN #p2_oWithFC;
+	L S5T#15S;
+	SF #p2_guuzenTimer;
+
+--------------------------------END_GUUZEN---------------------------------*)
+//---------------------проверка необходимости включения НАs-----------------
+NETWORK
+TITLE =
+//проверка низкого давления относительно уставки
+
+	A(;
+		L #PROCESS_DATA.P_setpoint;
+		L #P_current;
+		-R;
+		L #PROCESS_DATA.P_setLowDiff;
+		>R;
+		);
+    L #PROCESS_DATA.delayLow;
+    SD #lowPressTimer;
+    
+NETWORK
+TITLE =
+//проверка высокого давления
+	A(;
+		L #P_current;
+		L #PROCESS_DATA.P_setpoint;
+		-R;
+		L #PROCESS_DATA.P_setUpDiff;
+		>R;
+		);
+    L #PROCESS_DATA.delayUp;
+    SD #highPressTimer;
+
+(*--------------------проверка 20 Гц-------------14.01.2016--------------*)
+NETWORK
+TITLE =
+//если первый ПЧ некоторое время работает на 20 Гц, то запускаем таймер
+
+	//A #mainMustStart;
+	//A #DO_p1_turnOn;
+	A #DI_p1_confirm;
+	A(;
+		AN #DI_p2_confirm;
+		AN #DI_p3_confirm;
+		);
+	A(;
+		L FCs.fc1_currFreq;
+		L PROCESS_DATA.lowerHz;
+		<R;
+		);
+	L PROCESS_DATA.TwentyHzOffDelay;
+	SD #mainFC1_20Hz;
+
+NETWORK
+TITLE =
+//если второй насос с ПЧ некоторое время работает на 20 Гц, то запускаем таймер				
+	
+	//A #mainMustStart;
+	//A #DO_p2_turnOnFC;
+	A #DI_p2_confirm;
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p3_confirm;
+		);
+	A(;
+		L FCs.fc1_currFreq;
+		L PROCESS_DATA.lowerHz;
+		<R;
+		);	
+	L PROCESS_DATA.TwentyHzOffDelay;
+	SD #mainFC2_20Hz;
+		
+NETWORK
+TITLE =
+//если третий насос с ПЧ некоторое время работает на 20 Гц, то запускаем таймер
+					
+	//A #mainMustStart;
+	//A #DO_p3_turnOnFC;
+	A #DI_p3_confirm;
+	A(;
+		AN #DI_p1_confirm;
+		AN #DI_p2_confirm;
+		);
+	A(;
+		L FCs.fc1_currFreq;
+		L PROCESS_DATA.lowerHz;
+		<R;
+		);	
+	L PROCESS_DATA.TwentyHzOffDelay;
+	SD #mainFC3_20Hz;
+(*---------------------------------------------------------------------*)
+	
+NETWORK
+TITLE =
+//функция, определяющая необходимость запуска основного и резервных НА
+	CALL "PUMPS_TOGGLE" (
+		//p1_iAuto	:= p1_iAuto,
+		p1_confirm 	:= p1_confirm,
+		p2_confirm 	:= p2_confirm,
+		p3_confirm 	:= p3_confirm,
+		p4_confirm 	:= p4_confirm,
+		p1_priority := p1_ficPrior,
+		p2_priority := p2_ficPrior,
+		p3_priority := p3_ficPrior,
+		p4_priority := p4_ficPrior,
+		delayPump 	:= PROCESS_DATA.delayPump,
+		P_current 	:= P_current,
+		P_setpoint 	:= PROCESS_DATA.P_setpoint,
+		
+		mainMustStart 	:= mainMustStart,
+		resMustStart 	:= resMustStart,
+		sResMustStart 	:= sResMustStart,
+		thResMustStart 	:= thResMustStart
+		);    
+	
+
+
+//--------------------------------запуск НАs от ПЧ-------------------------------
+NETWORK
+TITLE =
+//запуск первого насоса с ПЧ
+
+	A #p1_iAuto;
+	A(;
+		O(;
+     		L 1;
+	 		L #p1_ficPrior;
+	 		==I;
+	 		A #mainMustStart;
+	 	);
+		O(;
+	 		L 2;
+	 		L #p1_ficPrior;
+	 		==I;
+	 		A #resMustStart;	   
+	 	);
+	 	O(;
+	 		L 3;
+	 		L #p1_ficPrior;
+	 		==I;
+	 		A #sResMustStart;	   
+	 	);
+	 	O(;
+	 		L 4;
+	 		L #p1_ficPrior;
+	 		==I;
+	 		A #thResMustStart;	   
+	 	);
+	);
+			  
+     = #p1_oWithFC;
+     
+NETWORK
+TITLE =
+//запуск второго насоса с ПЧ
+
+	A #p2_iAuto;
+	A(;
+		O(;
+	 		L 1;
+	 		L #p2_ficPrior;
+	 		==I;
+	 		A #mainMustStart;
+	 	);
+	 	O(;
+	 		L 2;
+	 		L #p2_ficPrior;
+	 		==I;	 		
+	 		A #resMustStart;	   
+	 	);
+	 	O(;
+	 		L 3;
+	 		L #p2_ficPrior;
+	 		==I;
+	 		A #sResMustStart;
+	 	);
+	 	O(;
+	 		L 4;
+	 		L #p2_ficPrior;
+	 		==I;	 		
+	 		A #thResMustStart;	   
+	 	);
+	);
+	//AN #p2_guuzenTimer;
+		
+	= #p2_oWithFC;
+     
+NETWORK
+TITLE =
+//запуск третьего насоса с ПЧ
+
+	 A #p3_iAuto;
+	 A(;
+	 	O(;
+	 		L 1;
+	 		L #p3_ficPrior;
+	 		==I;
+	 		A #mainMustStart;
+	 	);
+	 	O(;
+	 		L 2;
+	 		L #p3_ficPrior;
+	 		==I;
+	 		//A #p1_iAuto;
+	 		A #resMustStart;	   
+	 	);
+	 	O(;
+	 		L 3;
+	 		L #p3_ficPrior;
+	 		==I;
+	 		A #sResMustStart;
+	 	);
+	 	O(;
+	 		L 4;
+	 		L #p3_ficPrior;
+	 		==I;	 		
+	 		A #thResMustStart;	   
+	 	);
+	 );
+	 //AN #p3_guuzenTimer;
+	 	 	  
+     = #p3_oWithFC;
+
+NETWORK
+TITLE =
+//запуск четвертого насоса с ПЧ
+
+	 A #p4_iAuto;
+	 A(;
+	 	O(;
+	 		L 1;
+	 		L #p4_ficPrior;
+	 		==I;
+	 		A #mainMustStart;
+	 	);
+	 	O(;
+	 		L 2;
+	 		L #p4_ficPrior;
+	 		==I;
+	 		//A #p1_iAuto;
+	 		A #resMustStart;	   
+	 	);
+	 	O(;
+	 		L 3;
+	 		L #p4_ficPrior;
+	 		==I;
+	 		A #sResMustStart;
+	 	);
+	 	O(;
+	 		L 4;
+	 		L #p4_ficPrior;
+	 		==I;	 		
+	 		A #thResMustStart;	   
+	 	);
+	 );
+	 //AN #p3_guuzenTimer;
+	 	 	  
+     = #p4_out;
+(*----------------------процесс запуска НА2,3 от пускателя-----------------------
+NETWORK
+TITLE =
+//начало запуска второго резервного
+
+	A #DI_p2_auto;
+	A #DI_p3_auto;
+	A(;
+		O #sResMustStart;
+		O(;
+			AN #p1_iAuto;
+			A #resMustStart;
+		);
+	);
+	//FP #starterFPbegin;
+	S #sResStartMode;
+	
+NETWORK
+TITLE =
+//сброс режима включения второго резервного
+	O #p2_oDirect;
+	O #p3_oDirect;
+	//FP #starterFPend;
+		
+	R #sResStartMode;	
+		      
+
+NETWORK
+TITLE =
+//расчет фиктивной уставки
+	L #PROCESS_DATA.P_setpoint;
+	A #sResStartMode;
+	JCN _307;
+	
+		L #P_current;
+		L #PROCESS_DATA.P_deltaFic;
+		-R;
+	
+		L 0.000000e+000;
+		<R;			
+		JC _306;
+			TAK;
+		_306: NOP 0;
+
+	_307: NOP 0;
+	T #fc1_oSetP;
+	T #fc2_oSetP;
+	
+NETWORK
+TITLE =
+//проверка возможности включения второго резервного ( от пускателя )
+
+	A #sResStartMode;
+	A(;
+		L #fc1_curFreq;
+		L #PROCESS_DATA.alloDirFreq;
+		<=R;
+	);
+	A(;
+		L #fc2_curFreq;
+		L #PROCESS_DATA.alloDirFreq;
+		<=R;
+	);
+	
+	= #allowDirect;
+	
+NETWORK
+TITLE =
+//включение НА2 от пускателя
+	A #PROCESS_DATA.allowSecRes;
+	A #p2_iAuto;
+	A(;
+		L 3;
+		L #p2_ficPrior;
+		==I;
+	);
+	A #sResMustStart;
+	A(;
+		O #allowDirect;
+		O #p2_oDirect;
+	);
+	
+	= #p2_oDirect;
+	
+NETWORK
+TITLE =
+//включение НА3 от пускателя
+	A #PROCESS_DATA.allowSecRes;
+	A #p3_iAuto;
+	A(;
+		L 3;
+		L #p3_ficPrior;
+		==I;
+		O(;
+			L 2;
+			L #p3_ficPrior;
+			==I;
+			AN #p1_iAuto;
+		);
+	);
+	A(;
+		O #sResMustStart;
+		O(;
+			A #resMustStart;
+			AN #p1_iAuto;
+		);
+	);
+	A(;
+		O #allowDirect;
+		O #p3_oDirect;
+	);
+	
+	= #p3_oDirect;
+	
+END_FUNCTION
+-----------------------------------------------------------------*)
+
+NETWORK
+TITLE =
+//уставка
+	L #PROCESS_DATA.P_setpoint;
+
+	T #fc1_oSetP;
+	T #fc2_oSetP;
+	T #fc3_oSetP;
+
+END_FUNCTION

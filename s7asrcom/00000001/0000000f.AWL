@@ -1,0 +1,20 @@
+DATA_BLOCK "kagiri"
+TITLE =
+VERSION : 1.0
+
+STRUCT
+	shitaKagiriNyuu : REAL;
+	ueKagiriShutsu	: REAL;
+	
+	suhoyTime		: S5TIME;
+
+	
+END_STRUCT;
+
+BEGIN
+	shitaKagiriNyuu	:= 1.500000e+000;
+	ueKagiriShutsu	:= 9.000000e+000;
+	
+	suhoyTime		:= S5T#10S;
+
+END_DATA_BLOCK

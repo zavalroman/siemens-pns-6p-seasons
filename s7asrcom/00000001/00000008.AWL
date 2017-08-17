@@ -1,0 +1,76 @@
+DATA_BLOCK "PROCESS_DATA"
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+STRUCT
+	p1_priority : INT;
+	p2_priority : INT;
+	p3_priority : INT;
+	
+	delayLow	: S5TIME;
+	delayUp		: S5TIME;
+	delayPump	: S5TIME;
+
+	P_setpoint	: REAL;
+	P_setLowDiff: REAL;
+	P_setUpDiff : REAL;
+	
+	P_deltaFic	: REAL;	
+	alloDirFreq : REAL;
+	allowSecRes	: BOOL;
+	
+	Alarma		: BOOL;
+	
+	TwentyHzOffDelay : S5TIME;
+	
+	lowerHz : REAL;
+	
+	offHz3th	: REAL;
+	offHz2nd	: REAL;
+	
+	p4_priority : INT; //26.09.2016
+	p1_ficPrio	: INT;
+	p2_ficPrio	: INT;
+	p3_ficPrio	: INT;
+	p4_ficPrio	: INT;
+	offHz4th	: REAL;
+	
+	autoCount	: INT; //28.12.2016
+END_STRUCT;
+
+BEGIN
+	p1_priority := 1;
+	p2_priority := 2;
+	p3_priority := 3;
+	
+	delayLow	:= S5T#30S;
+	delayUp		:= S5T#30S;
+	delayPump	:= S5T#30S;
+
+	P_setpoint := 0.000000e+000;
+	P_setLowDiff := 3.000000e-001;
+	P_setUpDiff  := 3.000000e-001;
+	P_deltaFic	:= 5.000000e-001;
+	
+	alloDirFreq := 1.500000e+001;
+	
+	allowSecRes := FALSE;
+	
+	TwentyHzOffDelay := S5T#30S;
+	
+	lowerHz := 1.600000e+001;
+	
+	offHz4th	:= 3.000000e+001;
+	offHz3th	:= 3.000000e+001;
+	offHz2nd	:= 4.000000e+001;
+	
+	p4_priority := 4;
+	p1_ficPrio	:= 1;
+	p2_ficPrio	:= 2;
+	p3_ficPrio	:= 3;
+	p4_ficPrio	:= 4;
+	
+	autoCount := 0; //28.12.2016
+END_DATA_BLOCK
+	

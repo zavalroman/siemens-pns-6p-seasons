@@ -1,0 +1,603 @@
+FUNCTION "PUMPS_TOGGLE" : VOID
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+VAR_INPUT
+	//p1_iAuto	: BOOL;
+	p1_confirm	: BOOL;
+	p2_confirm	: BOOL;
+	p3_confirm	: BOOL;
+	p4_confirm	: BOOL;
+	p1_priority	: INT;
+	p2_priority	: INT;
+	p3_priority	: INT;
+	p4_priority : INT;
+	delayPump	: S5TIME;
+	P_current	: REAL;      //??
+	P_setpoint	: REAL;
+END_VAR
+VAR_OUTPUT
+	mainMustStart : BOOL;
+	resMustStart : BOOL;
+	sResMustStart : BOOL;
+	thResMustStart : BOOL;
+END_VAR
+VAR_TEMP
+	resConOut  : BOOL;
+	sResConOut : BOOL;
+	thResConOut: BOOL;
+	//sResStarted : BOOL;
+	thResStarted : BOOL;
+	mainStopped : BOOL;
+	
+	mainConfirm : BOOL;
+	resConfirm	: BOOL;
+	sResConfirm : BOOL;
+	
+	mainMustStop : BOOL;
+	resMustStop : BOOL;
+	sResMustStop : BOOL;
+	thResMustStop : BOOL;
+	
+END_VAR
+BEGIN
+NETWORK
+TITLE =
+//считаем количество НА в стопе 28.12.2016
+	L 0;
+	T #PROCESS_DATA.autoCount;
+	A #DI_p1_auto;
+	JC _cn1;
+		L #PROCESS_DATA.autoCount;
+		INC 1;
+		T #PROCESS_DATA.autoCount;
+_cn1: NOP 0;
+	A #DI_p2_auto;
+	JC _cn2;
+		L #PROCESS_DATA.autoCount;
+		INC 1;
+		T #PROCESS_DATA.autoCount;
+_cn2: NOP 0;
+	A #DI_p3_auto;
+	JC _cn3;
+		L #PROCESS_DATA.autoCount;
+		INC 1;
+		T #PROCESS_DATA.autoCount;
+_cn3: NOP 0;
+	A #DI_p4_auto;
+	JC _cn4;
+		L #PROCESS_DATA.autoCount;
+		INC 1;
+		T #PROCESS_DATA.autoCount;
+_cn4: NOP 0;
+
+NETWORK
+TITLE =
+//таймер для запуска первого резервного насоса
+	O(;
+		L #p1_priority;
+		L 1;
+		==I;
+		A #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 1;
+		==I;
+		A #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 1;
+		==I;
+		A #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 1;
+		==I;
+		A #p4_confirm;
+	);
+	= #mainConfirm;
+    L #delayPump;
+	SD #main_started; 
+	
+NETWORK
+TITLE =
+//таймер для запуска второго резервного насоса	
+	O(;
+		L #p1_priority;
+		L 2;
+		==I;
+		A #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 2;
+		==I;
+		A #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 2;
+		==I;
+		A #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 2;
+		==I;
+		A #p4_confirm;
+	);
+	= #resConfirm;
+	L #delayPump;
+	SD #reserve_started;
+	
+NETWORK
+TITLE =
+//таймер для запуска третьего резервного насоса	
+	O(;
+		L #p1_priority;
+		L 3;
+		==I;
+		A #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 3;
+		==I;
+		A #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 3;
+		==I;
+		A #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 3;
+		==I;
+		A #p4_confirm;
+	);
+	= #sResConfirm;
+	L #delayPump;
+	SD #sReserve_started;
+	
+NETWORK
+TITLE =
+//третий резервный запущен
+	O(;
+		L #p1_priority;
+		L 4;
+		==I;
+		A #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 4;
+		==I;
+		A #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 4;
+		==I;
+		A #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 4;
+		==I;
+		A #p4_confirm;
+	);
+
+	= #thResStarted;
+
+NETWORK
+TITLE =
+//таймер после останова третьего резервного
+	O(;
+		L #p1_priority;
+		L 4;
+		==I;
+		AN #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 4;
+		==I;
+		AN #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 4;
+		==I;
+		AN #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 4;
+		==I;
+		AN #p4_confirm;
+	);
+	
+	= #thResConOut;
+	
+    L #delayPump;
+	SD #third_res_stopped; 	
+
+NETWORK
+TITLE =
+//таймер после останова второго резервного
+	O(;
+		L #p1_priority;
+		L 3;
+		==I;
+		AN #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 3;
+		==I;
+		AN #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 3;
+		==I;
+		AN #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 3;
+		==I;
+		AN #p4_confirm;
+	);
+(* не понимаю, но оставлю на всякий случай
+	O(;
+		L #p3_priority;
+		L 2;
+		==I;
+		AN #p1_iAuto;
+	);
+*)	
+	= #sResConOut;
+	
+    L #delayPump;
+	SD #second_res_stopped; 	
+
+NETWORK
+TITLE =
+//таймер после останова резервного
+	O(;
+		L #p1_priority;
+		L 2;
+		==I;
+		AN #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 2;
+		==I;
+		AN #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 2;
+		==I;
+		AN #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 2;
+		==I;
+		AN #p4_confirm;
+	);
+	=#resConOut;
+	
+    L #delayPump;
+	SD #reserve_stopped; 
+	
+NETWORK
+TITLE =
+//основной остановлен
+	O(;
+		L #p1_priority;
+		L 1;
+		==I;
+		AN #p1_confirm;
+	);
+	O(;
+		L #p2_priority;
+		L 1;
+		==I;
+		AN #p2_confirm;
+	);
+	O(;
+		L #p3_priority;
+		L 1;
+		==I;
+		AN #p3_confirm;
+	);
+	O(;
+		L #p4_priority;
+		L 1;
+		==I;
+		AN #p4_confirm;
+	);
+	
+	= #mainStopped;
+	
+NETWORK
+TITLE =
+//запрос останова основного НА
+	O(;
+		A #main_started;
+									
+		A(; 
+			O #reserve_stopped;
+			O(;
+				L #PROCESS_DATA.autoCount;
+				L 3;
+				==I;
+			);
+		);
+		A #highPressTimer;
+	);
+	O(;
+		A #mainStopped;
+		AN #mainMustStart;
+	);
+	O(;
+		O #mainFC1_20Hz;
+		O #mainFC2_20Hz;		
+		O #mainFC3_20Hz;		
+	);
+	
+	= #mainMustStop;
+
+NETWORK
+TITLE =
+//запрос останова резервного НА
+	O(;
+		A #reserve_started;
+									
+		A(; 
+			O #second_res_stopped;
+			O(;
+				L #PROCESS_DATA.autoCount;
+				L 2;
+				==I;
+			);
+		);
+		A(;
+			O(;
+				A(;
+					L #PROCESS_DATA.offHz2nd;
+					L #FCs.fc1_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz2nd;
+					L #FCs.fc2_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz2nd;
+					L #FCs.fc3_currFreq;
+					>R;
+				);
+			);	
+											
+			O #highPressTimer;
+		);	
+	);
+	O(;
+		A #resConOut;
+		AN #resMustStart;
+	);
+	O #mainMustStop;
+	
+	= #resMustStop;
+	
+NETWORK
+TITLE =
+//запрос останова второго резервного НА
+	O(;
+		A #sReserve_started;
+									
+		A(; 
+			O #third_res_stopped;
+			O(;
+				L #PROCESS_DATA.autoCount;
+				L 1;
+				==I;
+			);
+		);
+		A(;
+			O(;
+				A(;
+					L #PROCESS_DATA.offHz3th;
+					L #FCs.fc1_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz3th;
+					L #FCs.fc2_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz3th;
+					L #FCs.fc3_currFreq;
+					>R;
+				);
+			);	
+											
+			O #highPressTimer;
+		);	
+	);
+	O(;
+		A #sResConOut;
+		AN #sResMustStart;
+	);
+	O #resMustStop;
+	
+	= #sResMustStop;
+	
+NETWORK
+TITLE =
+//запрос останова третьего резервного НА
+	O(;
+		A #thResStarted;
+		A(;
+			O(;
+				A(;
+					L #PROCESS_DATA.offHz4th;
+					L #FCs.fc1_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz4th;
+					L #FCs.fc2_currFreq;
+					>R;
+				);
+				A(;
+					L #PROCESS_DATA.offHz4th;
+					L #FCs.fc3_currFreq;
+					>R;
+				);
+			);	
+											
+			O #highPressTimer;
+		);
+	);
+	O(;																
+		A  #thResConOut;
+		AN #thResMustStart;
+	);
+	O #sResMustStop;
+	
+	= #thResMustStop;
+	
+NETWORK
+TITLE =
+//запрос запуска основного НА
+	O(;
+		L #P_setpoint;
+		L #P_current;
+		-R;							
+		L 0.100000e+000;
+		>R;
+	);
+	//O(;
+	O(;
+		A #mainConfirm;
+		AN #mainMustStop;
+	);
+		//AN(;
+			//O #mainFC1_20Hz;
+			//O #mainFC2_20Hz;		
+			//O #mainFC3_20Hz;
+			//);
+		//);
+	
+	= #mainMustStart;
+	
+NETWORK
+TITLE =
+//запрос запуска резервного НА
+	O(;
+		A #lowPressTimer;
+		A(;
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc1_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc2_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc3_currFreq;
+					<R;
+				);
+		);							
+		A #main_started;
+	);
+	O(;
+		A #resConfirm;
+		AN #resMustStop;
+	);
+	
+	= #resMustStart;
+	
+NETWORK
+TITLE =
+//запрос запуска второго резервного НА
+	O(;
+		A #lowPressTimer;
+		A(;
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc1_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc2_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc3_currFreq;
+					<R;
+				);
+		);							
+		A #reserve_started;
+	);
+	O(;
+		A #sResConfirm;
+		AN #sResMustStop;
+	);
+	
+	= #sResMustStart;
+	
+NETWORK
+TITLE =
+//запрос запуска третьего резервного НА
+	O(;
+		A #lowPressTimer;
+		A(;
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc1_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc2_currFreq;
+					<R;
+				);
+				O(;
+					L 4.800000e+001;
+					L #FCs.fc3_currFreq;
+					<R;
+				);
+		);									
+		A #sReserve_started;
+	);
+	O(;
+		A #thResStarted;
+		AN #thResMustStop;
+	);
+	
+	= #thResMustStart;
+	
+
+END_FUNCTION
+	

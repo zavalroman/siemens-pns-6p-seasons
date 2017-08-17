@@ -1,0 +1,25 @@
+
+Date: 11/10/2015  time: 03:45:51 PM
+Compile:
+newgenpns\SIMATIC 300(1)\Hardware
+-> Object was compiled without errors
+
+
+Date: 11/10/2015  time: 03:45:53 PM
+Compile:
+newgenpns\SIMATIC 300(1)\IM151-8 PN/DP CPU\S7 Program(1)\Blocks
+-> Object compilation was executed (with warnings)
+
+FC118  [STL]
+FC200  [STL]
+FC300  [STL]
+FC106  [FBD]
+Warning: The S7 program contains the following blocks that are referenced but not available:
+DB5
+
+
+Date: 11/10/2015  time: 03:45:59 PM
+Compile:
+newgenpns\SIMATIC 300(1)\IM151-8 PN/DP CPU\Connections
+-> Object was compiled without errors
+

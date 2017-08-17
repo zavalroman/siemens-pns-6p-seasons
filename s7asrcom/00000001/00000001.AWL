@@ -1,0 +1,75 @@
+DATA_BLOCK DB 1
+TITLE =Значение каналов AI
+VERSION : 1.0
+	STRUCT
+	CH_0 : WORD ; //P input
+	CH_1 : WORD ; //P output
+
+	END_STRUCT ;
+	
+BEGIN
+CH_0 := W#16#0;
+CH_1 := W#16#0;
+
+END_DATA_BLOCK
+
+
+DATA_BLOCK DB 2
+TITLE =Сигнал с преобразователя (в mA)
+VERSION : 1.0
+
+	STRUCT
+	SE_1 : REAL ; //P input
+	SE_2 : REAL ; //P output
+
+	END_STRUCT ;
+	
+BEGIN
+	SE_1 := 0.000000e+000;
+	SE_2 := 0.000000e+000;
+
+END_DATA_BLOCK	
+
+
+FUNCTION FC 1 : VOID
+TITLE = Преобразование значений каналов
+VERSION : 1.0
+
+VAR_INPUT
+	Raw : WORD ; //Считанное аналоговое значение
+END_VAR
+
+VAR_OUTPUT
+	Current : REAL ; //Ток в mA
+END_VAR
+
+VAR_TEMP
+	TDoubleInt : DINT ;
+	TInt : INT ;
+END_VAR
+
+BEGIN
+NETWORK
+TITLE = Преобразование значения в mA
+
+	L #Raw;
+	T #TInt;
+	//Только двойные целые могут быть преобразованы в формат REAL
+	L #TInt;
+	ITD ;
+	T #TDoubleInt;
+	
+	L #TDoubleInt; //       16-ричное значение
+	DTR ;		   // Ток = --------------------
+	T #Current;	   //			    1728
+	
+	L	1.728000e+003;	//	!			/
+	/R	;				//	!		   /
+	T	#Current;		//	!		  /
+						//	+========/===========+===
+						//			4			20
+	L	4.000000e+000;	//Настройка Offset
+	+R	;
+	T	#Current;
+	
+END_FUNCTION

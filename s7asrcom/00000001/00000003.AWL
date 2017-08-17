@@ -1,0 +1,49 @@
+FUNCTION FC 3 : VOID
+TITLE = current to measuring value
+VERSION : 1.0
+
+VAR_INPUT
+	Current : REAL; 
+	STop : REAL; 	   
+	SBottom : REAL;    
+END_VAR
+
+VAR_OUTPUT
+	Actual_value : REAL	; 
+END_VAR
+
+VAR_TEMP
+	NOENT : REAL;
+END_VAR
+
+BEGIN
+NETWORK
+TITLE = Арифметика
+
+// t = SBottom + ((4-Current)*(STop-SBottom))/160
+
+		
+	L #Current;
+	L 4.000000e+000;
+	-R;
+	T #NOENT;
+	
+	L #STop;
+	L #SBottom;
+	-R;
+	
+	L #NOENT;
+	*R;
+	
+	L 1.600000e+001;
+	/R;
+	
+	L #SBottom;
+	+R;
+	
+	T #Actual_value;
+	
+END_FUNCTION
+
+	
+	

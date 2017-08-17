@@ -1,0 +1,89 @@
+DATA_BLOCK "MM430_NS1"
+TITLE =
+AUTHOR : CHANt
+FAMILY : OTS
+NAME : NS1_MM43
+VERSION : 0.1
+
+
+  STRUCT 	
+   DEVIATION_SETPOINT : BOOL ;	//Бит 08 Рассогласование уставки и фактического значения 0 ДА Deviation setpoint 
+   ASU_WORK : BOOL ;	//Бит 09 Управление AG (PZD-управление) 1 ДА PZD control 0 NO 1 YES
+   MAX_FREQUENCY : BOOL ;	//Бит 10 Достигнута максимальная частота 1 ДА Maximum frequency reached 0 NO 1 YE
+   MAX_CURRRNT : BOOL ;	//Бит 11 Предупреждение: граничное значение тока двигателя 0 ДА Warning: Motor cu
+   TORMOZ_ACTUAL : BOOL ;	//Бит 12 Тормоз двигателя активен 1 ДА Motor holding brake active 0 NO 1 YES
+   OVERLOAD_PRIVOD : BOOL ;	//Бит 13 Перегрузка двигателя 0 ДА Motor overload 0 YES 1 NO
+   PRIVOD_RIGHT : BOOL ;	//Бит 14 Правое вращение 1 ДА Motor runs right 0 NO 1 YES
+   OVERLOAD_INVERTER : BOOL ;	//Бит 15 Перегрузка вентильного преобразователя частоты 0 ДА Inverter overload 0 
+   GOTOV_K_VKL : BOOL ;	//Бит 00 Готов к включению 1 ДА Drive ready 0 NO 1 YES
+   GOTOV_K_RABOTE : BOOL ;	//Бит 01 Готов к работе 1 ДА Drive ready to run 0 NO 1 YES
+   PRIVOD_V_RABOTE : BOOL ;	//Бит 02 Работа/деблокирование импульсов 1 ДА Drive running 0 NO 1 YES
+   ALARM_ACTUAL : BOOL ;	//Бит 03 Неисправность активна 1 ДА Drive fault active 0 NO 1 YES
+   STOP2_PRIVOD : BOOL ;	//Бит 04 ВЫКЛ2 активно 0 ДА OFF2 active 0 YES 1 NO
+   STOP3_PRIVOD : BOOL ;	//Бит 05 ВЫКЛ3 активно 0 ДА OFF3 active 0 YES 1 NO
+   BLOK_ACTUAL : BOOL ;	//Бит 06 Блокировка включения активна 1 ДА ON inhibit active 0 NO 1 YES
+   WARNING_ACTUAL : BOOL ;	//Бит 07 Предупреждение активно 1 ДА Drive warning active 0 NO 1 YES
+   FREQUENCY : WORD ;	//Текущая частота двигателя
+   CURRENT : WORD ;	//Текущий ток двигателя
+   VOLTAGE_DC : WORD ;	//DC напряжение (если его нет - значит нет входной напруги)
+   CLOCKW_INCHING : BOOL ;	//Бит 08 JOG вправо 0 НЕТ 1 ДА
+   CCLOCKW_INCHING : BOOL ;	//Бит 09 JOG влево 0 НЕТ 1 ДА 
+   ASU_UPRAVLENIE : BOOL ;	//Бит 10 Управление от контроллера (AG) 0 НЕТ 1 ДА
+   REVERCE : BOOL ;	//Бит 11 Реверсирование 0 НЕТ 1 ДА
+   RESERVED : BOOL ;	//Бит 12 RESERVED
+   UP_FREQ : BOOL ;	//Бит 13 Потенциометр двигателя вверх 0 НЕТ 1 ДА
+   DOWN_FREQ : BOOL ;	//Бит 14 Потенциометр двигателя вниз 0 НЕТ 1 ДА
+   LOCAL_REMOTE_CDS : BOOL ;	//Бит 15 CDS Бит (Local/Remote) 0 НЕТ 1 ДА
+   PUSK_PRIVOD : BOOL ;	//Бит 00 ВКЛ / ОТКЛ 0 НЕТ 1 ДА
+   BREAK2 : BOOL ;	//Бит 01 ОТКЛ2 : Электр. останов. 0 ДА 1 НЕТ
+   BREAK3 : BOOL ;	//Бит 02 ОТКЛ3 : Быстрая остановка 0 ДА 1 НЕТ
+   DEBLOCK_IMPULSE : BOOL ;	//Бит 03 Деблокировка импульсов 0 НЕТ 1 ДА
+   DEBLOCK_RAZGON : BOOL ;	//Бит 04 Деблокировка датчика разгона (HLG) 0 НЕТ 1 ДА
+   ENABLE_RFG : BOOL ;	//Бит 05 Запуск HLG 0 НЕТ 1 ДА
+   DEBLOCK_SETPOINT : BOOL ;	//Бит 06 Деблокировка заданной величины 0 НЕТ 1 ДА
+   KVIT_ALARM : BOOL ;	//Бит 07 Квитирование сбоя 0 НЕТ 1 ДА
+   PID_SETPOINT : WORD ;	//Уставка ПИД-регулятору
+   RESERVED_3 : WORD ;	//Резервное слово 3
+   RESERVED_4 : WORD ;	//Резервное слово 4
+  END_STRUCT ;	
+BEGIN
+   DEVIATION_SETPOINT := FALSE; 
+   ASU_WORK := FALSE; 
+   MAX_FREQUENCY := FALSE; 
+   MAX_CURRRNT := FALSE; 
+   TORMOZ_ACTUAL := FALSE; 
+   OVERLOAD_PRIVOD := FALSE; 
+   PRIVOD_RIGHT := FALSE; 
+   OVERLOAD_INVERTER := FALSE; 
+   GOTOV_K_VKL := FALSE; 
+   GOTOV_K_RABOTE := FALSE; 
+   PRIVOD_V_RABOTE := FALSE; 
+   ALARM_ACTUAL := FALSE; 
+   STOP2_PRIVOD := FALSE; 
+   STOP3_PRIVOD := FALSE; 
+   BLOK_ACTUAL := FALSE; 
+   WARNING_ACTUAL := FALSE; 
+   FREQUENCY := W#16#0; 
+   CURRENT := W#16#0; 
+   VOLTAGE_DC := W#16#0; 
+   CLOCKW_INCHING := FALSE; 
+   CCLOCKW_INCHING := FALSE; 
+   ASU_UPRAVLENIE := FALSE; 
+   REVERCE := FALSE; 
+   RESERVED := FALSE; 
+   UP_FREQ := FALSE; 
+   DOWN_FREQ := FALSE; 
+   LOCAL_REMOTE_CDS := FALSE; 
+   PUSK_PRIVOD := FALSE; 
+   BREAK2 := FALSE; 
+   BREAK3 := FALSE; 
+   DEBLOCK_IMPULSE := FALSE; 
+   DEBLOCK_RAZGON := FALSE; 
+   ENABLE_RFG := FALSE; 
+   DEBLOCK_SETPOINT := FALSE; 
+   KVIT_ALARM := FALSE; 
+   PID_SETPOINT := W#16#0; 
+   RESERVED_3 := W#16#0; 
+   RESERVED_4 := W#16#0; 
+END_DATA_BLOCK
+

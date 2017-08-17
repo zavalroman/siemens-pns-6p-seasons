@@ -1,0 +1,238 @@
+FUNCTION "FICTION_PRIORITY" : VOID
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+VAR_INPUT
+	p1_iAuto	: BOOL;
+	p2_iAuto	: BOOL;
+	p3_iAuto	: BOOL;
+	p4_iAuto	: BOOL;
+	p1_priority	: INT;
+	p2_priority : INT;
+	p3_priority : INT;
+	p4_priority : INT;
+	prioScheme1	: BOOL; //1-2-3-4
+	prioScheme2	: BOOL;	//3-1-2-4
+	prioScheme3	: BOOL; //2-3-1-4
+	prioScheme4	: BOOL; //2-1-3-4
+
+END_VAR
+VAR_OUTPUT
+	p1_ficPri	: INT;
+	p2_ficPri	: INT;
+	p3_ficPri	: INT;
+	p4_ficPri	: INT;
+END_VAR
+VAR_TEMP
+	p1_tempPrio	: INT;
+	p2_tempPrio	: INT;
+	p3_tempPrio	: INT;
+	p4_tempPrio	: INT;
+END_VAR
+
+BEGIN
+NETWORK
+TITLE =
+//копируем текущие приоритеты во временный буффер
+	L #p1_priority;
+	T #p1_tempPrio;
+	L #p2_priority;
+	T #p2_tempPrio;
+	L #p3_priority;
+	T #p3_tempPrio;
+	L #p4_priority;
+	T #p4_tempPrio;
+NETWORK
+TITLE = 
+//
+	A #prioScheme1;
+	JCN _001;
+		A #p1_iAuto;			
+		JC _010;//если выключен первый НА при схеме один, повышаем приоритеты остальным
+			L 5;
+			T #p1_tempPrio;
+			L #p2_tempPrio;
+			DEC 1;
+			T #p2_tempPrio;
+			L #p3_tempPrio;
+			DEC 1;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_010: NOP 0;
+		A #p2_iAuto;
+		JC _011;
+			L 5;
+			T #p2_tempPrio;
+			L #p3_tempPrio;
+			DEC 1;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_011: NOP 0;
+		A #p3_iAuto;
+		JC _012;
+			L 5;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_012: NOP 0;
+		A #p4_iAuto;
+		JC _013;
+			L 5;
+			T #p4_tempPrio;
+		_013: NOP 0;
+	_001: NOP 0;
+	
+NETWORK
+TITLE =
+//
+	A #prioScheme2;
+	JCN _002;
+		A #p2_iAuto;			
+		JC _020;
+			L 5;
+			T #p2_tempPrio;
+			L #p3_tempPrio;
+			DEC 1;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+			L #p1_tempPrio;
+			DEC 1;
+			T #p1_tempPrio;
+		_020: NOP 0;
+		A #p3_iAuto;
+		JC _021;
+			L 5;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+			L #p1_tempPrio;
+			DEC 1;
+			T #p1_tempPrio;
+		_021: NOP 0;
+		A #p1_iAuto;
+		JC _022;
+			L 5;
+			T #p1_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_022: NOP 0;
+		A #p4_iAuto;
+		JC _023;
+			L 5;
+			T #p4_tempPrio;
+		_023: NOP 0;
+	_002: NOP 0;
+	
+NETWORK
+TITLE =
+//
+	A #prioScheme3;
+	JCN _003;
+		A #p3_iAuto;			
+		JC _030;
+			L 5;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+			L #p1_tempPrio;
+			DEC 1;
+			T #p1_tempPrio;
+			L #p2_tempPrio;
+			DEC 1;
+			T #p2_tempPrio;
+		_030: NOP 0;
+		A #p1_iAuto;
+		JC _031;
+			L 5;
+			T #p1_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+			L #p2_tempPrio;
+			DEC 1;
+			T #p2_tempPrio;
+		_031: NOP 0;
+		A #p2_iAuto;
+		JC _032;
+			L 5;
+			T #p2_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_032: NOP 0;
+		A #p4_iAuto;
+		JC _033;
+			L 5;
+			T #p4_tempPrio;
+		_033: NOP 0;
+	_003: NOP 0;
+
+NETWORK
+TITLE =
+//
+	A #prioScheme4;
+	JCN _004;
+		A #p2_iAuto;	// 28.12.2016		
+		JC _040;
+			L 5;
+			T #p2_tempPrio;
+			L #p1_tempPrio;
+			DEC 1;
+			T #p1_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+			L #p3_tempPrio;
+			DEC 1;
+			T #p3_tempPrio;
+		_040: NOP 0;
+		A #p1_iAuto;
+		JC _041;
+			L 5;
+			T #p1_tempPrio;
+			L #p3_tempPrio;
+			DEC 1;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_041: NOP 0;
+		A #p3_iAuto;
+		JC _042;
+			L 5;
+			T #p3_tempPrio;
+			L #p4_tempPrio;
+			DEC 1;
+			T #p4_tempPrio;
+		_042: NOP 0;
+		A #p4_iAuto;
+		JC _043;
+			L 5;
+			T #p4_tempPrio;
+		_043: NOP 0;
+	_004: NOP 0;
+	
+NETWORK
+TITLE = 
+//
+	L #p1_tempPrio;
+	T #p1_ficPri;
+	L #p2_tempPrio;
+	T #p2_ficPri;
+	L #p3_tempPrio;
+	T #p3_ficPri;
+	L #p4_tempPrio;
+	T #p4_ficPri;
+	
+END_FUNCTION

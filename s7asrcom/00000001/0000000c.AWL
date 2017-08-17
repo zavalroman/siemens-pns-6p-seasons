@@ -1,0 +1,26 @@
+DATA_BLOCK "PressDB"
+TITLE =
+VERSION : 1.0
+
+STRUCT
+	actualPressIN 		: REAL; 
+	bottomPresSensIN 	: REAL;
+	topPresSensIN 		: REAL;
+	
+	actualPressOUT 		: REAL; 
+	bottomPresSensOUT 	: REAL;
+	topPresSensOUT 		: REAL;
+
+	
+END_STRUCT;
+
+BEGIN
+	actualPressIN 		:= 0.000000e+000; 
+	bottomPresSensIN 	:= 0.000000e+000;
+	topPresSensIN 		:= 0.000000e+000;
+
+	actualPressOUT 		:= 0.000000e+000; 
+	bottomPresSensOUT 	:= 0.000000e+000;
+	topPresSensOUT 		:= 0.000000e+000;
+
+END_DATA_BLOCK

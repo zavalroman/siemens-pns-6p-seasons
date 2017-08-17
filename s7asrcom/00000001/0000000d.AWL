@@ -1,0 +1,82 @@
+DATA_BLOCK "FCs"
+TITLE =
+VERSION : 1.0
+
+STRUCT
+	fc1_currFreq	: REAL;
+	fc1_currCurr	: REAL;
+	fc1_currPowr	: REAL;
+	fc1_voltAru		: BOOL;
+	fc1_ready		: BOOL;
+	fc1_inWork		: BOOL;
+	fc1_alarm		: BOOL;
+	fc1_block		: BOOL;
+	fc1_warning		: BOOL;
+	fc1_asu			: BOOL;
+	fc1_connect		: BOOL;
+	
+	fc2_currFreq	: REAL;
+	fc2_currCurr	: REAL;
+	fc2_currPowr	: REAL;
+	fc2_voltAru		: BOOL;
+	fc2_ready		: BOOL;
+	fc2_inWork		: BOOL;
+	fc2_alarm		: BOOL;
+	fc2_block		: BOOL;
+	fc2_warning		: BOOL;
+	fc2_asu			: BOOL;
+	fc2_connect		: BOOL;
+	
+	fc3_currFreq	: REAL;
+	fc3_currCurr	: REAL;
+	fc3_currPowr	: REAL;
+	fc3_voltAru		: BOOL;
+	fc3_ready		: BOOL;
+	fc3_inWork		: BOOL;
+	fc3_alarm		: BOOL;
+	fc3_block		: BOOL;
+	fc3_warning		: BOOL;
+	fc3_asu			: BOOL;
+	fc3_connect		: BOOL;
+
+END_STRUCT;
+
+BEGIN
+	fc1_currFreq	:= 0.000000e+000;
+	fc1_currCurr	:= 0.000000e+000;
+	fc1_currPowr	:= 0.000000e+000;
+	fc1_voltAru		:= FALSE;
+	fc1_ready		:= FALSE;
+	fc1_inWork		:= FALSE;
+	fc1_alarm		:= FALSE;
+	fc1_block		:= FALSE;
+	fc1_warning		:= FALSE;
+	fc1_asu			:= FALSE;
+	fc1_connect		:= FALSE;
+
+	
+	fc2_currFreq	:= 0.000000e+000;
+	fc2_currCurr	:= 0.000000e+000;
+	fc2_currPowr	:= 0.000000e+000;
+	fc2_voltAru		:= FALSE;
+	fc2_ready		:= FALSE;
+	fc2_inWork		:= FALSE;
+	fc2_alarm		:= FALSE;
+	fc2_block		:= FALSE;
+	fc2_warning		:= FALSE;
+	fc2_asu			:= FALSE;
+	fc2_connect		:= FALSE;
+	
+	fc3_currFreq	:= 0.000000e+000;
+	fc3_currCurr	:= 0.000000e+000;
+	fc3_currPowr	:= 0.000000e+000;
+	fc3_voltAru		:= FALSE;
+	fc3_ready		:= FALSE;
+	fc3_inWork		:= FALSE;
+	fc3_alarm		:= FALSE;
+	fc3_block		:= FALSE;
+	fc3_warning		:= FALSE;
+	fc3_asu			:= FALSE;
+	fc3_connect		:= FALSE;
+
+END_DATA_BLOCK

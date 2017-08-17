@@ -1,0 +1,26 @@
+DATA_BLOCK "DB_PUMPOFF"
+TITLE =
+AUTHOR : rooman
+VERSION : 0.1
+
+STRUCT
+	Pmp1off : BOOL;
+	Pmp2off	: BOOL;
+	Pmp3off	: BOOL;
+	Delay 	: S5TIME;
+	resetFcAlarm : BOOL;
+	sf_delay	 : S5TIME;
+	
+	Pmp4off	: BOOL; //27.09.16
+END_STRUCT
+BEGIN
+	
+	Pmp1off := FALSE;
+	Pmp2off := FALSE;
+	Pmp3off := FALSE;
+	Delay	:= S5T#10S;
+	resetFcAlarm := FALSE;
+	sf_delay	:= S5T#300S;
+		
+	Pmp4off := FALSE;
+END_DATA_BLOCK
